@@ -1,0 +1,12 @@
+version: "1"
+
+tasks:
+  hello:
+    description: Print a greeting
+    command: echo Hello from Tavrix!
+  build:
+    description: Build Tavrix
+    command: go build ./cmd/tavrix
+  test:
+    description: Run the Go tests
+    command: go test ./...
