@@ -144,7 +144,7 @@ func run(ctx context.Context, args []string, version, dir string, r runner.Runne
 }
 
 func initConfig(path string) error {
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644) // #nosec G302 G304 -- Exclusive creation of the project's shareable starter file.
 	if errors.Is(err, os.ErrExist) {
 		return fmt.Errorf("%s already exists; edit or move it before initializing", config.Filename)
 	}

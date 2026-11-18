@@ -15,7 +15,7 @@ git clone https://github.com/JacobBananalDev/tavrix.git
 cd tavrix
 ./scripts/shell.sh
 # Inside the Guix shell:
-go build ./cmd/tavrix
+./run.ysh build
 ```
 
 Without Guix, download the [Go 1.27.4 archive](https://go.dev/dl/) for your OS and unpack it to a directory you control. From the Tavrix checkout, invoke that toolchain directly:
@@ -64,16 +64,26 @@ Tavrix reads `tavrix.yaml` from the current directory, not from parent directori
 
 ## Develop and contribute
 
-Run these commands inside the Guix shell. With a locally unpacked toolchain, use its `go` executable directly instead.
+Use [`run.ysh`](run.ysh) for contributor tasks. On Linux, start the Guix shell below. Outside Guix, put Oils (`ysh`) and a user-local Go toolchain on your session's `PATH`.
 
 ```sh
-go fmt ./...
-go test ./...
-go vet ./...
-go build ./cmd/tavrix
+./run.ysh -h                        # Show available tasks (same as --help)
+./run.ysh list-tasks
+./run.ysh lint --help               # Show help for a specific task
+./run.ysh penv code .                # Open the repo in VS Code from this environment
+./run.ysh fmt                        # Format Go packages
+./run.ysh lint                       # Check YSH syntax, Go vet, Staticcheck, and Revive
+./run.ysh check                      # Test, vet, and build
+./run.ysh test -v ./internal/runner  # Run a focused test package
+./run.ysh vuln                       # Run gosec and govulncheck
+./run.ysh pre-commit                 # Check formatting, lint, scan, and run unit tests
 ```
 
-CI runs these checks on all three supported platforms. Tests use native shell commands and temporary directories, not network services. For fixes or features, open an issue to discuss larger changes, then submit a focused pull request with tests and updated documentation. See the [architecture guide](docs/architecture.md) for the package layout.
+`penv` runs the command from the repository root with your current environment. To open VS Code, `code` must already be on `PATH`; use the regular Guix shell rather than the container for desktop apps. The lint and security tools are pinned and run through Go without global installs. First use may need network access, and `govulncheck` fetches current advisories.
+
+To check staged files automatically before each commit, opt in with `./run.ysh penv git config --local core.hooksPath .githooks`. Commit from an environment with Go and YSH available. The hook checks a temporary copy of the staged tree without formatting or changing it. If formatting fails, run `./run.ysh fmt` and stage the result.
+
+`./run.ysh build` embeds `git describe --tags --always --dirty` in the binary's `--version` output. CI checks Go formatting, tests, vet, and build on all three supported platforms without requiring YSH. For larger changes, open an issue first, then submit a focused pull request with tests and updated documentation. See the [architecture guide](docs/architecture.md) for the package layout.
 
 ### Guix development shell (Linux)
 

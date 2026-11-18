@@ -1,0 +1,50 @@
+proc _taskfile-docs (mode, task) {
+    awk -v mode=$mode -v task=$task '
+        /^## usage: / { usage = substr($0, 11); next }
+        /^## summary: / { summary = substr($0, 13); next }
+
+        /^proc / {
+            name = $2
+            if (summary != "" && mode == "list") {
+                printf "  %-10s %s\n", name, summary
+            } else if (summary != "" && name == task) {
+                if (usage == "") usage = "./run.ysh " name
+                printf "Usage: %s\n\n%s\n", usage, summary
+                found = 1
+                exit
+            }
+        }
+        { usage = summary = "" }
+        END { if (mode == "help" && !found) exit 2 }
+    ' "$TASK_FILE"
+}
+
+proc _taskfile-list {
+    write -- 'Usage: ./run.ysh <task> [arguments]' '' 'Available tasks:'
+    _taskfile-docs list ''
+    write -- '' 'Use ./run.ysh <task> --help for details.'
+}
+
+proc _taskfile-list-command {
+    if (len(ARGV) === 0) {
+        _taskfile-list
+    } elif (len(ARGV) === 1 and (ARGV[0] === '-h' or ARGV[0] === '--help')) {
+        write -- 'Usage: ./run.ysh list-tasks' '' 'List all available tasks.'
+    } else {
+        write -- 'Usage: ./run.ysh list-tasks' >&2
+        exit 2
+    }
+}
+
+proc _taskfile-help (task) {
+    _taskfile-docs help $task
+}
+
+proc _taskfile-no-args (task, ...args) {
+    if (len(args) === 1 and (args[0] === '-h' or args[0] === '--help')) {
+        _taskfile-help $task
+    } else {
+        write -- "Task '$task' does not accept arguments. See ./run.ysh $task --help." >&2
+        exit 2
+    }
+}

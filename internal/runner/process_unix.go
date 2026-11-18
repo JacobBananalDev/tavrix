@@ -11,7 +11,7 @@ import (
 )
 
 func shellCommand(ctx context.Context, script string) (*exec.Cmd, error) {
-	return exec.CommandContext(ctx, "/bin/sh", "-c", script), nil
+	return exec.CommandContext(ctx, "/bin/sh", "-c", script), nil // #nosec G204 -- Explicit task execution intentionally runs the trusted task's shell script.
 }
 
 func configureCancellation(cmd *exec.Cmd, interactive bool) {

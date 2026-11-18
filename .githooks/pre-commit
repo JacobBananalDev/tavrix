@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+snapshot=$(mktemp -d)
+trap 'find "$snapshot" -depth -delete' EXIT
+git checkout-index --all --prefix="$snapshot/"
+cd "$snapshot"
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_PREFIX
+./run.ysh pre-commit

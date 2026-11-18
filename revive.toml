@@ -1,0 +1,15 @@
+severity = "warning"
+confidence = 0.8
+warningCode = 1
+errorCode = 1
+
+[rule.blank-imports]
+[rule.context-as-argument]
+[rule.context-keys-type]
+[rule.error-strings]
+[rule.errorf]
+[rule.increment-decrement]
+[rule.receiver-naming]
+[rule.unexported-return]
+[rule.unreachable-code]
+[rule.var-declaration]

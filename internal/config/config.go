@@ -46,7 +46,7 @@ type Config struct {
 }
 
 func Load(path string) (Config, error) {
-	f, err := os.Open(path)
+	f, err := os.Open(path) // #nosec G304 -- CLI loads the selected project's configuration file.
 	if err != nil {
 		return Config{}, err
 	}
